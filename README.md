@@ -59,9 +59,21 @@ We start by adding some necessary libraries, the WiFi itself, libaries for the m
 #include "nvs_flash.h"
 ```
 
-```
+On `void app_main(void)`, the fist function we are going to call will be the `init_wifi()`. But while creating this function, we will be considering that this will be a function that must return the status, if an error happened or if it went okay. When we call the `init_wifi()`, we will be calling by using the defined function of `ESP_ERROR_CHECK` (part of the esp_err.h, indirectly declared). Considering that, the last line of the `init_wifi()` will be a `return ESP_OK;` with type `esp_err_t`.
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/1edaaee0-7493-4664-83e5-8c59d4dba730)
+
+Then, we will be initializing a struct of type `wifi_init_config_t`, tha is used to pass the WiFi parameters to the esp function `esp_wifi_init()`. To easy this configuration, we will be using the default macro `WIFI_INIT_CONFIG_DEFAULT()`.
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/821cd984-8598-4a82-8b3b-d0883165363e)
+
+Then we will be calling the `esp_netif_init()`, to init the netif 
+    esp_event_loop_create_default();
+    nvs_flash_init();
+
+```c
 static esp_err_t init_wifi(void){
-    wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT(); //  // usa macro default
+    wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT(); // macro default
 
     esp_netif_init();
     esp_event_loop_create_default();
