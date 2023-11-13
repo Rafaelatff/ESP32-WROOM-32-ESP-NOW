@@ -113,12 +113,60 @@ static esp_err_t init_wifi(void){
 
 ## ESP NOW - Esp Now Init
 
+Again, on the `void app_main(void)`, we call the `init_esp_now()` by using the defined function of `ESP_ERROR_CHECK`and returning a `ESP_OK` at the end. We also call the `esp_now.h` library.
+
 ```c
 #include "esp_now.h"
+
+void app_main(void)
+{
+    ESP_ERROR_CHECK(init_wifi()); // Already explained
+    ESP_ERROR_CHECK(init_esp_now());
+} 
+```
+The function begins with a `esp_now_init()`, to initializate the Esp Now.
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/406ef94d-26b4-4c7b-ada7-54d915e91e44)
+
+We call the `esp_now_register_recv_cb()` to register callback function of receiving ESPNOW dataand pass the data `recv_cb` and set a LOGI:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/a1af1c05-2274-4cc5-a43c-37548349e356)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/c89e4d14-5acb-484c-b129-849652292efb)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/3fa7ff61-b66f-4044-a59f-b9e82894bae2)
+
+The same for the `esp_now_register_send_cb()`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/2311773c-7404-4a56-b21e-9c56cc629d33)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/6b76ef74-347b-468f-95c3-bd8bb3a0d6d9)
+
+
+The entire `init_esp_now()` code stays as:
+```c
+static esp_err_t init_esp_now(void){
+    esp_now_init();
+    esp_now_register_recv_cb(recv_cb);
+    esp_now_register_send_cb(send_cb);
+
+    ESP_LOGI(TAG, "ESP NOW initialization completed.");
+    return ESP_OK;
+}
+```
+
+## ESP NOW - Peer register
+
+The entire `register_peer()` code stays as:
+```c
+static esp_err_t register_peer(uint8_t *peer_addr){
+    esp_now_peer_info_t esp_now_peer_info = {};
+    memcpy(esp_now_peer_info.peer_addr, peer_mac, ESP_NOW_ETH_ALEN);
+    esp_now_peer_info.channel = ESP_CHANNEL;
+    esp_now_peer_info.ifidx = ESP_IF_WIFI_STA;
+
+    esp_now_add_peer(&esp_now_peer_info);
+    return ESP_OK;
+}
 ```
 
 # Bibliography
 
 All the links that help me through the process of ESP32 learning.
 
-* []().
+* [ESP32 IDF SDK 35: ESP NOW unidireccional - initiator](https://www.youtube.com/watch?v=-FFhONBzRZ4&list=PL-Hb9zZP9qC65SpXHnTAO0-qV6x5JxCMJ&index=36).
+* [ESP32 IDF SDK 36: ESP NOW unidireccional - responder](https://www.youtube.com/watch?v=HIJFqvpriqg&list=PL-Hb9zZP9qC65SpXHnTAO0-qV6x5JxCMJ&index=37).
