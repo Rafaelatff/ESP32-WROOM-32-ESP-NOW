@@ -64,12 +64,35 @@ On `void app_main(void)`, the fist function we are going to call will be the `in
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/1edaaee0-7493-4664-83e5-8c59d4dba730)
 
 Then, we will be initializing a struct of type `wifi_init_config_t`, tha is used to pass the WiFi parameters to the esp function `esp_wifi_init()`. To easy this configuration, we will be using the default macro `WIFI_INIT_CONFIG_DEFAULT()`.
-
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/821cd984-8598-4a82-8b3b-d0883165363e)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/b85d598e-f832-499b-8123-be760b64c1a0)
 
-Then we will be calling the `esp_netif_init()`, to init the netif 
-    esp_event_loop_create_default();
-    nvs_flash_init();
+Then we will be calling the `esp_netif_init()`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/155dfca1-8d55-41db-8de1-53c14c9236a1)
+
+Also the `esp_event_loop_create_default()`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/13a7eec1-acee-4aa4-a2e1-f2140ec9d7f3)
+
+And the `nvs_flash_init()`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/018d9509-6d37-4a38-993a-75a49906c87c)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/b86d035a-36de-4969-8fb4-236bfe4d8fda)
+
+Then we pass the struct with the default configuration to the `esp_wifi_init(&wifi_init_config)`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/d33dd127-8930-4385-bb71-09465b7d886a)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/13a9e1cd-3a56-4642-86a4-a29773791fee)
+
+Then we set the WiFi mode to Station by `esp_wifi_set_mode(WIFI_MODE_STA)`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/09925326-4662-45fa-9bb1-543ed84de1f3)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/88c76dc6-f9e6-4308-bbe0-bfc1e113d5d5)
+
+We set the storage memory for the WiFi as Flash, by `esp_wifi_set_storage(WIFI_STORAGE_FLASH)`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/8d8c039a-55c4-4c1b-b132-79b0c50ff6c7)
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/6be1055b-34c7-4f40-a12e-c6dc479e8c4f)
+
+And to finish the WiFi initialization we call `esp_wifi_start()`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/f72ce596-85e7-4a10-bd3c-ca0c7b9c06c0)
+
+The complete code stays as:
 
 ```c
 static esp_err_t init_wifi(void){
