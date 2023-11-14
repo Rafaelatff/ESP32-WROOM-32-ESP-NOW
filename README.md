@@ -130,12 +130,30 @@ The function begins with a `esp_now_init()`, to initializate the Esp Now.
 We call the `esp_now_register_recv_cb()` to register callback function of receiving ESPNOW dataand pass the data `recv_cb` and set a LOGI:
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/a1af1c05-2274-4cc5-a43c-37548349e356)
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/c89e4d14-5acb-484c-b129-849652292efb)
-![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/3fa7ff61-b66f-4044-a59f-b9e82894bae2)
 
-The same for the `esp_now_register_send_cb()`:
+```c
+void recv_cb(const esp_now_recv_info_t * esp_now_info, const uint8_t *data, int data_len){
+    ESP_LOGI(TAG, "Data received: " MACSTR "%s", MAC2STR(esp_now_info->src_addr), data);
+}
+```
+Where, `MACSTR` and `MAC2STR` are defined as:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/4e1dc9ac-67af-48bd-b297-c20e54d9687e)
+
+
+The same for the `esp_now_register_send_cb(send_cb))`:
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/2311773c-7404-4a56-b21e-9c56cc629d33)
 ![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/6b76ef74-347b-468f-95c3-bd8bb3a0d6d9)
 
+```c
+void send_cb(const uint8_t *mac_addr, esp_now_send_status_t status){
+    if(status == ESP_NOW_SEND_SUCCESS){
+        ESP_LOGI(TAG, "ESP_NOW_SEND_SUCCESS");
+    }
+    else{
+        ESP_LOGI(TAG, "ESP_NOW_SEND_FAIL");
+    }
+}
+```
 
 The entire `init_esp_now()` code stays as:
 ```c
@@ -226,6 +244,58 @@ static esp_err_t register_peer(uint8_t *peer_addr){
 ```
 
 ## ESP NOW - Sending Data
+
+To send data, we declared the following function:
+
+```c
+static esp_err_t esp_now_send_data(const uint8_t *peer_addr, const uint8_t *data, uint8_t len){
+    esp_now_send(peer_addr, data, len);
+    return ESP_OK;
+}
+```
+
+That basically will call the `esp_now_send()`, defined in the `esp_now.h` library
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/8a25abce-ef6b-4dd0-9f5f-bebad5d02b33)
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/a41e9eeb-67b9-48dd-8bdc-f79ebe2d691c)
+
+At this point, we can have an ESP32 programmed and sending data (THIS CODE CAN ALSO BE USED TO DISCOVER THE MAC ADDRESS OF THE ESP BOARD).
+
+Inside the `app_main(void)`, we will add the following code:
+
+```c
+    uint8_t data_LED_ON[] = "1";
+    uint8_t data_LED_OFF[] = "0";
+
+    while(1){
+        gpio_set_level(BLUE_LED,1); // #define BLUE_LED GPIO_NUM_2 at the begin of the code
+        esp_now_send_data(peer_mac, data_LED_ON, 32); // 32 is way more len than needed,
+        vTaskDelay(pdMS_TO_TICKS(1000)); // 1 sec
+         gpio_set_level(BLUE_LED,0);
+        esp_now_send_data(peer_mac, data_LED_OFF, 32);
+        vTaskDelay(pdMS_TO_TICKS(1000)); // 1 sec
+    }
+```
+After `build`, `flash` and `monitor`:
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/0b074db7-a947-490d-84b1-2b8076e2905c)
+
+Then I recober the MAC address of two boards:
+
+* `a0:b7:65:63:96:04`
+* `48:e7:29:ca:f9:78`
+
+To test the code, I changed the MAC address of broadcast to one of these MAC, and programmed the board with the other MAC with all the functions presented in this repositorie, plus the **ESP NOW - Receiving Data** part (and different `app_main(void)` of course!).
+
+The MAC modification:
+
+```c
+static uint8_t peer_mac [ESP_NOW_ETH_ALEN] = {0xa0, 0xb7, 0x65, 0x63, 0x96, 0x04};
+//Broadcast = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+```
+
+All this code is inside this repositorie, on the `esp-now-idf` folder.
 
 ## ESP NOW - Receiving Data
 
