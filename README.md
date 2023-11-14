@@ -299,6 +299,45 @@ All this code is inside this repositorie, on the `esp-now-idf` folder.
 
 ## ESP NOW - Receiving Data
 
+The ESP32 that will receive the message doesn't need to have a peer_mac configured. The code doesn't show the GPIO configuration, only the WiFi and ESP NOW needed configuration. We will init the WiFi by `init_wifi()` and init the ESP NOW `init_esp_now()` and then stay forever inside a `while(1)` loop.
+
+```c
+void app_main(void)
+{
+    ESP_ERROR_CHECK(init_wifi());
+    ESP_ERROR_CHECK(init_esp_now());
+    while(1){
+    }
+}
+```    
+The received message will be received on the already written, `recv_cb()` function. We will just implement a few things.
+
+Once the send data is "1" or "0" (`uint8_t data_LED_ON[] = "1"; uint8_t data_LED_OFF[] = "0";`), the receive data will be a string that can be either the char "1" or "0". To convert the char to an integer, we use the `atoi()` function. The atoi function stands for ASCII to Integer. We will pass the result of the `atoi()` function to ah variable named `value` of `uint8_t` type.
+
+We will pass data, typecasted as char, `uint8_t value = atoi((char *) data);`. If the value is 1, it lid its own blue LED. If the received value is 0, then the board will turn off its own LED.
+
+Function will be like:
+
+```c
+void recv_cb(const esp_now_recv_info_t * esp_now_info, const uint8_t *data, int data_len){
+    ESP_LOGI(TAG, "Data received: " MACSTR "%s", MAC2STR(esp_now_info->src_addr), data);
+
+    uint8_t value = atoi((char *) data);
+    if(value == 1){
+        gpio_set_level(BLUE_LED,1);
+    }
+    else{
+        gpio_set_level(BLUE_LED,0);
+    }
+}
+```
+
+After `build`, `flash` and `monitor`:
+
+![WhatsApp Video 2023-11-13 at 23 19 29](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/509cb131-bc4f-4e67-a58d-231ea3cb21a3)
+
+All this code is inside this repositorie, on the `esp-now-idf-responder` folder.
+
 # Bibliography
 
 All the links that help me through the process of ESP32 learning.
