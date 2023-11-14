@@ -151,6 +151,67 @@ static esp_err_t init_esp_now(void){
 
 ## ESP NOW - Peer register
 
+We start by declaring a variable with the name `peer_mac`, with value of 0xFFFFFFFFFF, that will broadcast the messages. Later, when we discover the MAC address of the boards, we will change it to the desired address that we want to register as peer.
+
+```c
+static uint8_t peer_mac [ESP_NOW_ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+```
+
+We also define the channel that we want to use, at the begin of the code. In this way, is easy to change the channel later, instead of changing manually in each place a channel is configured.
+
+```c
+#define ESP_CHANNEL 1
+```
+
+And again, on the `void app_main(void)`, we call the `register_peer()` and pass as argument the global variable that we just defined `peer_mac`. We do all that by using the defined function of `ESP_ERROR_CHECK`and returning a `ESP_OK` at the end.
+
+```c
+#include "esp_now.h"
+
+void app_main(void)
+{
+    ESP_ERROR_CHECK(init_wifi()); // Already explained
+    ESP_ERROR_CHECK(init_esp_now()); // Already explained
+    ESP_ERROR_CHECK(register_peer(peer_mac));
+} 
+```
+
+The function will receive as argument `uint8_t *peer_addr` to the function `register_peer()`, 
+
+We start by creating a struct of type `esp_now_peer_info_t`:
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/591abaa8-8382-4018-82b8-c15e442aae5a)
+
+Then we use the function `memcpy()` that copies a block of memory from a source address to a destination address. We also need to include the `<string.h>` to use memcpy function. The general syntax of the memcpy() function is:
+
+```c
+void *memcpy(void *dest, const void *src, size_t n);
+```
+Where: 
+
+* dest: A pointer to the destination array where the content is to be copied.
+* src: A pointer to the source of data to be copied.
+* n: The number of bytes to copy.
+
+In our case we will be using:
+
+```c
+memcpy(esp_now_peer_info.peer_addr, peer_mac, ESP_NOW_ETH_ALEN);
+```
+To:
+
+* esp_now_peer_info.peer_addr will be the destination, where the content is to be copied.
+* peer_mac is the source of data to be copied, in our case, the global variable that we just declared.
+* ESP_NOW_ETH_ALEN, as the number of bytes to copy.
+
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/6b50b008-a6ce-4ff2-b9e6-55653aeee840)
+
+We pass the channel to the struct that we just created, `esp_now_peer_info.channel = ESP_CHANNEL;`.
+And we pass the `ESP_IF_WIFI_STA` `enum type` to the `ifidx` part of this same struct, `esp_now_peer_info.ifidx = ESP_IF_WIFI_STA;`.
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/5080f21e-89e8-4602-8451-b4e5c777e639)
+
+To finish, we pass the struct to the `esp_now_add_peer(&esp_now_peer_info)` function.
+![image](https://github.com/Rafaelatff/ESP32-WROOM-32-ESP-NOW/assets/58916022/7e67f70f-2fa4-4b47-8911-70001b43363a)
+
 The entire `register_peer()` code stays as:
 ```c
 static esp_err_t register_peer(uint8_t *peer_addr){
@@ -163,6 +224,10 @@ static esp_err_t register_peer(uint8_t *peer_addr){
     return ESP_OK;
 }
 ```
+
+## ESP NOW - Sending Data
+
+## ESP NOW - Receiving Data
 
 # Bibliography
 
