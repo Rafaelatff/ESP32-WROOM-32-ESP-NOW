@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Espressif/",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/log/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/driver/gpio/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/esp_wifi/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/esp_system/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/esp_hw_support/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/esp_netif/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/nvs_flash/include",
+                "C:/Espressif/frameworks/esp-idf-v5.1.1/components/esp_common/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\CTOOLS\\mingw32\\bin\\gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "windows-gcc-x86"
+        }
+    ],
+    "version": 4
+}
